@@ -51,6 +51,9 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		this.parentComponent.addDetachListener(this::onDetach);
 		
 		setParent(parentComponent);
+		
+		if(parentComponent.isAttached())
+			onAttach(null);
 	}
 	
 	private void onAttach(AttachEvent evt) {
