@@ -10,6 +10,7 @@ import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 import elemental.json.JsonArray;
 import elemental.json.impl.JreJsonNull;
@@ -40,12 +41,14 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 	private String this_remoteSetAndRetrieveLocalStorage;
 	private String this_remoteGetRemoteOrigin;
 	
-	private LocalStorageComponent() {
-		
+	/**
+	 * Only on attached state.
+	 */
+	public LocalStorageComponent() {
+		this(UI.getCurrent());
 	}
 	
 	public LocalStorageComponent(HasComponents parentComponent) {
-		this();
 		this.parentComponent = parentComponent;
 		this.parentComponent.addAttachListener(this::onAttach);
 		this.parentComponent.addDetachListener(this::onDetach);
