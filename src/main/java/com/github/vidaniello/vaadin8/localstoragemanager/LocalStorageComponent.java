@@ -44,11 +44,11 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 	/**
 	 * Only on attached state.
 	 */
-	public LocalStorageComponent() {
+	protected LocalStorageComponent() {
 		this(UI.getCurrent());
 	}
 	
-	public LocalStorageComponent(HasComponents parentComponent) {
+	protected LocalStorageComponent(HasComponents parentComponent) {
 		this.parentComponent = parentComponent;
 		this.parentComponent.addAttachListener(this::onAttach);
 		this.parentComponent.addDetachListener(this::onDetach);
@@ -130,7 +130,7 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		
 	}
 	
-	public void getClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
+	protected void getClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
 		
 		if(key==null)
 			throw new Exception("a key must be specified");
@@ -144,7 +144,7 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		JavaScript.getCurrent().execute(this_remoteSetAndRetrieveLocalStorage+"('"+key+"');");
 	}
 	
-	public void setClientLocalStorageItem(String key, String value, LocalStorageRequestListener listener) throws Exception {
+	protected void setClientLocalStorageItem(String key, String value, LocalStorageRequestListener listener) throws Exception {
 		
 		if(key==null)
 			throw new Exception("a key must be specified");
@@ -161,19 +161,19 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 			JavaScript.getCurrent().execute(this_remoteSetAndRetrieveLocalStorage+"('"+key+"', null);");
 	}
 	
-	public void setClientLocalStorageItem(String key, String value) throws Exception {
+	protected void setClientLocalStorageItem(String key, String value) throws Exception {
 		setClientLocalStorageItem(key, value, null);
 	}
 	
-	public void removeClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
+	protected void removeClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
 		setClientLocalStorageItem(key, null, listener);
 	}
 	
-	public void removeClientLocalStorageItem(String key) throws Exception {
+	protected void removeClientLocalStorageItem(String key) throws Exception {
 		setClientLocalStorageItem(key, null, null);
 	}
 	
-	public void getRemoteOrigin(LocalStorageInfoListener listener) {
+	protected void getRemoteOrigin(LocalStorageInfoListener listener) {
 		lastListener = listener;
 		JavaScript.getCurrent().execute(this_remoteGetRemoteOrigin+"();");
 	}
