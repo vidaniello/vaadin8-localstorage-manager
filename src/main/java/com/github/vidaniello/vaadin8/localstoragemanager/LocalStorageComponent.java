@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 
+import com.google.gson.Gson;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.JavaScript;
@@ -35,6 +37,7 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 	
 	private HasComponents parentComponent;
 	private String lastRequestKey;
+	private Class<? extends Serializable> lastObjectClass;
 	private LocalStorageListener lastListener;
 	
 	private String this_serverFunctionName;
@@ -96,6 +99,14 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		}
 	}
 	
+	private void copy(InputStream source, OutputStream target) throws IOException {
+	    byte[] buf = new byte[8192];
+	    int length;
+	    while ((length = source.read(buf)) > 0) {
+	        target.write(buf, 0, length);
+	    }
+	}
+	
 	private void onDetach(DetachEvent evt) {
 		try {
 			
@@ -106,6 +117,7 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void call(JsonArray arguments) {
 		
@@ -114,24 +126,31 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 				
 				String value = arguments.asString();
 				
+				//Vaadin 'arguments.asString' evaluate null reference from javascript with string like "null". 
+				//This control evaluate this eventuality and set the value with null reference instead of "null" string.
 				if(arguments.length()==1)
 					if(arguments.get(0).jsEquals(JreJsonNull.NULL_INSTANCE))
 						value = null;
 				
 				if(LocalStorageRequestListener.class.isAssignableFrom(lastListener.getClass()))
 					LocalStorageRequestListener.class.cast(lastListener).onRequestResponse(lastRequestKey, value);
-				else if(LocalStorageInfoListener.class.isAssignableFrom(lastListener.getClass()))
+				else if(LocalStorageRequestObjectListener.class.isAssignableFrom(lastListener.getClass())) {
+					Serializable ob = new Gson().fromJson(value, lastObjectClass);
+					LocalStorageRequestObjectListener.class.cast(lastListener).onRequestObjectResponse(ob);
+				} else if(LocalStorageInfoListener.class.isAssignableFrom(lastListener.getClass()))
 					LocalStorageInfoListener.class.cast(lastListener).onRequestResponse(value);
 				
 			} finally {
 				lastRequestKey = null;
+				lastObjectClass = null;
 				lastListener = null;
 			}		
 		
 	}
 	
-	protected void getClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
-		
+	
+	
+	private void _getClientLocalStorageItem(String key, LocalStorageListener listener) throws Exception {
 		if(key==null)
 			throw new Exception("a key must be specified");
 		
@@ -144,8 +163,23 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		JavaScript.getCurrent().execute(this_remoteSetAndRetrieveLocalStorage+"('"+key+"');");
 	}
 	
-	protected void setClientLocalStorageItem(String key, String value, LocalStorageRequestListener listener) throws Exception {
-		
+	protected void getClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
+		_getClientLocalStorageItem(key, listener);
+	}
+	
+	protected <T extends Serializable> void getClientLocalStorageItem(T object, LocalStorageRequestObjectListener<T> listener) throws Exception {
+		lastObjectClass = object.getClass();
+		_getClientLocalStorageItem(object.getClass().getCanonicalName(), listener);
+	}
+	
+	protected <T extends Serializable> void getClientLocalStorageItemFromClazz(Class<T> clazz, LocalStorageRequestObjectListener<T> listener) throws Exception {
+		lastObjectClass = clazz;
+		_getClientLocalStorageItem(clazz.getCanonicalName(), listener);
+	}
+	
+	
+	
+	private void _setClientLocalStorageItem(String key, String value, LocalStorageListener listener) throws Exception {
 		if(key==null)
 			throw new Exception("a key must be specified");
 		
@@ -161,28 +195,65 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 			JavaScript.getCurrent().execute(this_remoteSetAndRetrieveLocalStorage+"('"+key+"', null);");
 	}
 	
+	
+	protected void setClientLocalStorageItem(String key, String value, LocalStorageRequestListener listener) throws Exception {
+		_setClientLocalStorageItem(key, value, listener);
+	}
+	
+	protected <T extends Serializable> void setClientLocalStorageItem(T object, LocalStorageRequestObjectListener<T> listener) throws Exception {
+		lastObjectClass = object.getClass();
+		_setClientLocalStorageItem(object.getClass().getCanonicalName(), new Gson().toJson(object), listener);
+	}
+	
 	protected void setClientLocalStorageItem(String key, String value) throws Exception {
-		setClientLocalStorageItem(key, value, null);
+		_setClientLocalStorageItem(key, value, null);
+	}
+	
+	protected <T extends Serializable> void setClientLocalStorageItem(T object) throws Exception {
+		lastObjectClass = object.getClass();
+		setClientLocalStorageItem(object.getClass().getCanonicalName(), new Gson().toJson(object));
+	}
+	
+	
+	
+	
+	private void _removeClientLocalStorageItem(String key, LocalStorageListener listener) throws Exception {
+		_setClientLocalStorageItem(key, null, listener);
 	}
 	
 	protected void removeClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
-		setClientLocalStorageItem(key, null, listener);
+		_removeClientLocalStorageItem(key, listener);
+	}
+	
+	protected <T extends Serializable> void removeClientLocalStorageItem(T object, LocalStorageRequestObjectListener<T> listener) throws Exception {
+		lastObjectClass = object.getClass();
+		_removeClientLocalStorageItem(object.getClass().getCanonicalName(), listener);
+	}
+		
+	protected <T extends Serializable> void removeClientLocalStorageItemFromClazz(Class<T> clazz, LocalStorageRequestObjectListener<T> listener) throws Exception {
+		lastObjectClass = clazz;
+		_removeClientLocalStorageItem(clazz.getCanonicalName(), listener);
 	}
 	
 	protected void removeClientLocalStorageItem(String key) throws Exception {
-		setClientLocalStorageItem(key, null, null);
+		_setClientLocalStorageItem(key, null, null);
 	}
+
+	protected <T extends Serializable> void removeClientLocalStorageItem(T object) throws Exception {
+		lastObjectClass = object.getClass();
+		removeClientLocalStorageItem(object.getClass().getCanonicalName());
+	}
+		
+	protected <T extends Serializable> void removeClientLocalStorageItemFromClazz(Class<T> clazz) throws Exception {
+		lastObjectClass = clazz;
+		removeClientLocalStorageItem(clazz.getCanonicalName());
+	}
+	
+	
 	
 	protected void getRemoteOrigin(LocalStorageInfoListener listener) {
 		lastListener = listener;
 		JavaScript.getCurrent().execute(this_remoteGetRemoteOrigin+"();");
 	}
 
-	private void copy(InputStream source, OutputStream target) throws IOException {
-	    byte[] buf = new byte[8192];
-	    int length;
-	    while ((length = source.read(buf)) > 0) {
-	        target.write(buf, 0, length);
-	    }
-	}
 }
