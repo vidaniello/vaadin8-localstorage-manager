@@ -182,18 +182,18 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		JavaScript.getCurrent().execute(this_remoteSetAndRetrieveLocalStorage+"('"+call.getRequestKey()+"');");
 	}
 	
-	protected void getClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
+	protected void getClientLocalStorageItemByStringKey(String key, LocalStorageRequestListener listener) throws Exception {
 		ActiveCall call = new ActiveCall(key, null, listener);
 		_getClientLocalStorageItem(call);
 	}
 	
 	protected <T extends Serializable> void getClientLocalStorageItem(T object, LocalStorageRequestObjectListener<T> listener) throws Exception {
-		ActiveCall call = new ActiveCall(object.getClass().getCanonicalName(), null, listener);
+		ActiveCall call = new ActiveCall(object.getClass().getCanonicalName(), object.getClass(), listener);
 		_getClientLocalStorageItem(call);
 	}
 	
 	protected <T extends Serializable> void getClientLocalStorageItemFromClazz(Class<T> clazz, LocalStorageRequestObjectListener<T> listener) throws Exception {
-		ActiveCall call = new ActiveCall(clazz.getCanonicalName(), null, listener);
+		ActiveCall call = new ActiveCall(clazz.getCanonicalName(), clazz, listener);
 		_getClientLocalStorageItem(call);
 	}
 	
@@ -218,7 +218,7 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 	}
 	
 	
-	protected void setClientLocalStorageItem(String key, String value, LocalStorageRequestListener listener) throws Exception {
+	protected void setClientLocalStorageItemByStringKey(String key, String value, LocalStorageRequestListener listener) throws Exception {
 		ActiveCall call = new ActiveCall(key, null, listener);
 		_setClientLocalStorageItem(call, value);
 	}
@@ -228,13 +228,13 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		_setClientLocalStorageItem(call, new Gson().toJson(object));
 	}
 	
-	protected void setClientLocalStorageItem(String key, String value) throws Exception {
+	protected void setClientLocalStorageItemByStringKey(String key, String value) throws Exception {
 		ActiveCall call = new ActiveCall(key, null, null);
 		_setClientLocalStorageItem(call, value);
 	}
 	
 	protected <T extends Serializable> void setClientLocalStorageItem(T object) throws Exception {
-		setClientLocalStorageItem(object.getClass().getCanonicalName(), new Gson().toJson(object));
+		setClientLocalStorageItemByStringKey(object.getClass().getCanonicalName(), new Gson().toJson(object));
 	}
 	
 	
@@ -244,7 +244,7 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		_setClientLocalStorageItem(call, null);
 	}
 	
-	protected void removeClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
+	protected void removeClientLocalStorageItemByStringKey(String key, LocalStorageRequestListener listener) throws Exception {
 		ActiveCall call = new ActiveCall(key, null, listener);
 		_removeClientLocalStorageItem(call);
 	}
@@ -259,7 +259,7 @@ public class LocalStorageComponent extends AbstractComponent implements JavaScri
 		_removeClientLocalStorageItem(call);
 	}
 	
-	protected void removeClientLocalStorageItem(String key) throws Exception {
+	protected void removeClientLocalStorageItemByStringKey(String key) throws Exception {
 		ActiveCall call = new ActiveCall(key, null, null);
 		_setClientLocalStorageItem(call, null);
 	}

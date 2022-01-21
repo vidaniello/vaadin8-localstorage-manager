@@ -36,8 +36,8 @@ public class LocalStorage implements LocalStorageIf {
 	
 	
 	@Override
-	public void getClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
-		getLocalStorageComponent().getClientLocalStorageItem(key, listener);
+	public void getClientLocalStorageItemByStringKey(String key, LocalStorageRequestListener listener) throws Exception {
+		getLocalStorageComponent().getClientLocalStorageItemByStringKey(key, listener);
 	}
 	
 	
@@ -57,9 +57,9 @@ public class LocalStorage implements LocalStorageIf {
 	
 	
 	@Override
-	public void setClientLocalStorageItem(String key, String value, LocalStorageRequestListener listener)
+	public void setClientLocalStorageItemByStringKey(String key, String value, LocalStorageRequestListener listener)
 			throws Exception {
-		getLocalStorageComponent().setClientLocalStorageItem(key, value, listener);
+		getLocalStorageComponent().setClientLocalStorageItemByStringKey(key, value, listener);
 	}
 	
 	@Override
@@ -69,8 +69,8 @@ public class LocalStorage implements LocalStorageIf {
 	}
 	
 	@Override
-	public void setClientLocalStorageItem(String key, String value) throws Exception {
-		getLocalStorageComponent().setClientLocalStorageItem(key, value);
+	public void setClientLocalStorageItemByStringKey(String key, String value) throws Exception {
+		getLocalStorageComponent().setClientLocalStorageItemByStringKey(key, value);
 	}
 	
 	@Override
@@ -81,8 +81,8 @@ public class LocalStorage implements LocalStorageIf {
 	
 	
 	@Override
-	public void removeClientLocalStorageItem(String key, LocalStorageRequestListener listener) throws Exception {
-		getLocalStorageComponent().removeClientLocalStorageItem(key, listener);
+	public void removeClientLocalStorageItemByStringKey(String key, LocalStorageRequestListener listener) throws Exception {
+		getLocalStorageComponent().removeClientLocalStorageItemByStringKey(key, listener);
 	}
 	
 	@Override
@@ -98,8 +98,8 @@ public class LocalStorage implements LocalStorageIf {
 	}
 
 	@Override
-	public void removeClientLocalStorageItem(String key) throws Exception {
-		getLocalStorageComponent().removeClientLocalStorageItem(key);
+	public void removeClientLocalStorageItemByStringKey(String key) throws Exception {
+		getLocalStorageComponent().removeClientLocalStorageItemByStringKey(key);
 	}
 	
 	@Override
