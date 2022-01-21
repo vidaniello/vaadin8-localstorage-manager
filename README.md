@@ -4,6 +4,34 @@
 
 Vaadin 8 component for client side javascript `window.localStorage` managing.
 
+## Import in maven project
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+    ...
+    <repositories>
+	    <repository>
+           <id>jitpack.io</id>
+           <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+    ...
+    <dependencies>
+    ...
+    <dependency>
+        <groupId>com.github.vidaniello</groupId>
+        <artifactId>vaadin8-localstorage-manager</artifactId>
+        <version>latest relase, check the top jitpack badge</version>
+    </dependency>
+    ...
+    </dependencies>
+    ...
+</project> 
+```
+
 ## Use
 
 Work both with simple value, like `String`, or serializable objects.
